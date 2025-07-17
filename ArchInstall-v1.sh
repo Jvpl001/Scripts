@@ -72,7 +72,7 @@ mount /dev/$(echo $part1) /mnt/boot
 pacstrap /mnt base linux linux-firmware nano neovim sof-firmware base-devel grub grub-btrfs efibootmgr networkmanager snapper
 genfstab -U /mnt >>/mnt/etc/fstab
 
-cat <<REALEND >chroot.sh
+cat <<REALEND >/mnt/mnt/chroot.sh
 
 ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 hwclock --systohc
@@ -119,7 +119,7 @@ cd /home/$username/git
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
-cd /
+cd ~
 
 su $username; cd ~; bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -129,4 +129,4 @@ echo "Install Complete, You can reboot now"
 echo "-------------------------------------------------"
 REALEND
 
-arch-chroot /mnt sh chroot.sh
+arch-chroot /mnt sh /mnt/chroot.sh
