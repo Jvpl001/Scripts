@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
 echo "btrfs + KDE arch install"
-read -p "enter username:" -a username
-read -p "enter root password:" -a root_pass
-read -p "enter user password:" -a user_pass
-read -p "enter you country(example->Iran):" -a country
-read -p "enter you time zone(example->Asia/Tehran):" -a timezone
+echo "enter username:"
+read username
+echo "enter root password:"
+read root_pass
+echo "enter user password:"
+read user_pass
+echo "enter you country(example->Iran):"
+read country
+echo "enter you time zone(example->Asia/Tehran):"
+read timezone
 
 reflector -c $country --sort rate --save /etc/pacman.d/mirrorlist
 pacman -Syy
@@ -13,8 +18,8 @@ pacman-key --init
 pacman-key --populate
 
 lsblk
-
-read -p "enster sdX:" -a Install_drive
+echo "enter sdX:"
+read Install_drive
 
 num1="1"
 num2="2"
