@@ -40,11 +40,11 @@ btrfs su cr /mnt/@var
 btrfs su cr /mnt/@snapshots
 umount /mnt
 
+mount -o noatime,compress=lzo,space_cache=v2,subvol=@ /dev/$part3 /mnt
 mkdir -p /mnt/{boot,var,home,.snapshots}
-mount -o noatime,compress=lzo,space_cache,subvol=@ /dev/$part3 /mnt
-mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/$part3 /mnt/home
-mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/$part3 /mnt/var
-mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/$part3 /mnt/.snapshots
+mount -o noatime,compress=lzo,space_cache=v2,subvol=@home /dev/$part3 /mnt/home
+mount -o noatime,compress=lzo,space_cache=v2,subvol=@var /dev/$part3 /mnt/var
+mount -o noatime,compress=lzo,space_cache=v2,subvol=@snapshots /dev/$part3 /mnt/.snapshots
 mount /dev/$part1 /mnt/boot
 
 pacstrap /mnt base linux linux-firmware nano neovim sof-firmware base-devel grub grub-btrfs efibootmgr networkmanager snapper
