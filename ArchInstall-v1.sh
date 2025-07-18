@@ -28,37 +28,12 @@ part1="${Install_drive}${num1}"
 part2="${Install_drive}${num2}"
 part3="${Install_drive}${num3}"
 
-(
-  echo "g"
-  echo "n"
-  echo ""
-  echo ""
-  echo "+256M"
-  echo "Y"
-  echo "t"
-  echo "1"
-  echo "n"
-  echo ""
-  echo ""
-  echo "+4G"
-  echo "Y"
-  echo "t"
-  echo "2"
-  echo "swap"
-  echo "n"
-  echo ""
-  echo ""
-  echo ""
-  echo "Y"
-  echo "w"
-) | fdisk /dev/$(echo $Install_drive)
+mkfs.fat -F32 /dev/$part1
+mkswap /dev/$part2
+swapon /dev/$part2
+mkfs.btrfs /dev/$part3
 
-mkfs.fat -F32 /dev/$(echo $part1)
-mkswap /dev/$(echo $part2)
-swapon /dev/$(echo $part2)
-mkfs.btrfs /dev/$(echo $part3)
-
-mount /dev/$(echo $part3) /mnt
+mount /dev/$part3 /mnt
 btrfs su cr /mnt/@
 btrfs su cr /mnt/@home
 btrfs su cr /mnt/@var
@@ -66,11 +41,11 @@ btrfs su cr /mnt/@snapshots
 umount /mnt
 
 mkdir -p /mnt/{boot,var,home,.snapshots}
-mount -o noatime,compress=lzo,space_cache,subvol=@ /dev/$(echo $part3) /mnt
-mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/$(echo $part3) /mnt/home
-mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/$(echo $part3) /mnt/var
-mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/$(echo $part3) /mnt/.snapshots
-mount /dev/$(echo $part1) /mnt/boot
+mount -o noatime,compress=lzo,space_cache,subvol=@ /dev/$part3 /mnt
+mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/$part3 /mnt/home
+mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/$part3 /mnt/var
+mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/$part3 /mnt/.snapshots
+mount /dev/$part1 /mnt/boot
 
 pacstrap /mnt base linux linux-firmware nano neovim sof-firmware base-devel grub grub-btrfs efibootmgr networkmanager snapper
 genfstab -U /mnt >>/mnt/etc/fstab
