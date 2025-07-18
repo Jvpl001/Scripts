@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-echo "Snapper config"
+username=$USER
+echo "Snapper config enter root password"
+su -
 umount /.snapshots/
 rm -rf /.snapshots/
 snapper -c root create-config /
@@ -15,7 +17,4 @@ cd yay
 makepkg -si
 cd ~
 
-su $username
-cd ~
-bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
