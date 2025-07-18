@@ -3,10 +3,6 @@
 echo "btrfs + KDE arch install"
 echo "enter username:"
 read username
-echo "enter root password:"
-read root_pass
-echo "enter user password:"
-read user_pass
 echo "enter you country(example->Iran):"
 read country
 echo "enter you time zone(example->Asia/Tehran):"
@@ -58,7 +54,7 @@ sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 echo "ArchMachine" >> /etc/hostname
-passwd; echo $root_pass; echo $root_pass
+passwd
 
 cat <<EOF > /etc/hosts
 127.0.0.1 localhost
@@ -70,8 +66,8 @@ pacman -S mtools zsh mesa-utils git dosfstools man less linux-headers reflector 
 systemctl enable sddm
 systemctl enable NetworkManager
 
-useradd -m -G wheel,storage,power,audio,video -s /bin/zsh $username
-passwd $username; echo $user_pass; echo $user_pass
+useradd -m -G wheel,storage,power,audio,video $username
+passwd $username
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB 
