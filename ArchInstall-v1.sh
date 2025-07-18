@@ -29,25 +29,28 @@ part2="${Install_drive}${num2}"
 part3="${Install_drive}${num3}"
 
 (
-  echo g
-  echo n
+  echo "g"
+  echo "n"
   echo ""
   echo ""
   echo "+256M"
-  echo t
-  echo 1
-  echo n
+  echo "Y"
+  echo "t"
+  echo "1"
+  echo "n"
   echo ""
   echo ""
   echo "+4G"
-  echo t
-  echo 2
-  echo swap
-  echo n
+  echo "Y"
+  echo "t"
+  echo "2"
+  echo "swap"
+  echo "n"
   echo ""
   echo ""
   echo ""
-  echo w
+  echo "Y"
+  echo "w"
 ) | fdisk /dev/$(echo $Install_drive)
 
 mkfs.fat -F32 /dev/$(echo $part1)
