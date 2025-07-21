@@ -6,8 +6,8 @@ read user_pass
 echo "enter the root password:"
 read root_pass
 lsblk
-echo "enter the installation drive(\/dev\/sda):"
-read intall_drive
+echo "enter the installation drive(sdX):"
+read drive
 echo "enter the host name:"
 read host_name
 
@@ -19,5 +19,5 @@ sed -i 's/^            "username": "username"/            "username": "'$usernam
 sed -i 's/^    "root_enc_password": "rootpass",/    "root_enc_password": "'$root_pass_en'",/' user_credentials.json
 sed -i 's/^            "enc_password": "userpasss",/            "enc_password": "'$user_pass_en'",/' user_credentials.json
 
-sed -i 's/^                "device": "\/dev\/sda",/                "device": "'$intall_drive'",/' user_configuration.json
+sed -i 's/^                "device": "\/dev\/sda",/                "device": "\/dev\/'$drive'",/' user_configuration.json
 sed -i 's/^    "hostname": "Archmachine",/    "hostname": "'$host_name'",/' user_configuration.json
