@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "btrfs + KDE arch install"
+echo "btrfs + hyprland arch install"
 echo "enter username:"
 read username
 echo "enter the user password:"
@@ -68,7 +68,7 @@ cat <<EOF > /etc/hosts
 127.0.1.1	$host_name.localdomain	$host_name
 EOF
 
-pacman -S mtools zsh mesa-utils git dosfstools man less xclip linux-headers reflector plasma sddm kitty kate 7zip firefox btop vlc smplayer unrar pipewire pipewire-alsa dolphin pipewire-pulse --noconfirm --needed
+pacman -S mtools libva-mesa-driver vulkan-nouveau xf86-video-nouveau xorg-server xorg-xinit yt-dlp python3 fastfetch whois zsh mesa-utils git dosfstools man less xclip linux-headers reflector hyprland sddm kitty kate 7zip firefox btop vlc smplayer unrar pipewire pipewire-alsa dolphin pipewire-pulse --noconfirm --needed
 systemctl enable sddm
 systemctl enable NetworkManager
 systemctl enable snapper-timeline.timer
