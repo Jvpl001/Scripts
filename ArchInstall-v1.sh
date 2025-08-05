@@ -50,7 +50,7 @@ mount -o noatime,compress=lzo,space_cache=v2,subvol=@snapshots /dev/$part3 /mnt/
 mount /dev/$part1 /mnt/boot
 
 pacstrap /mnt base linux linux-firmware nano neovim sof-firmware base-devel grub grub-btrfs efibootmgr networkmanager snapper
-genfstab -U /mnt >>/mnt/etc/fstab
+genfstab -U /mnt >> /mnt/etc/fstab
 
 cat <<REALEND >/mnt/mnt/chroot.sh
 
@@ -68,7 +68,7 @@ cat <<EOF > /etc/hosts
 127.0.1.1	$host_name.localdomain	$host_name
 EOF
 
-pacman -S mtools libva-mesa-driver vulkan-nouveau xf86-video-nouveau xorg-server xorg-xinit yt-dlp python3 fastfetch whois zsh mesa-utils git dosfstools man less xclip linux-headers reflector hyprland sddm kitty kate 7zip firefox btop vlc smplayer unrar pipewire pipewire-alsa dolphin pipewire-pulse --noconfirm --needed
+pacman -S mtools libva-mesa-driver vulkan-nouveau cmake docker xf86-video-nouveau xorg-server xorg-xinit yt-dlp python3 fastfetch whois zsh mesa-utils git dosfstools man less xclip linux-headers reflector hyprland sddm kitty kate 7zip firefox btop vlc smplayer unrar pipewire pipewire-alsa dolphin pipewire-pulse --noconfirm --needed
 systemctl enable sddm
 systemctl enable NetworkManager
 systemctl enable snapper-timeline.timer
