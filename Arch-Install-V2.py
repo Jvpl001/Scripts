@@ -634,39 +634,92 @@ def main() -> None:
         
         # Create and execute chroot script
         progress.update("Preparing system configuration")
-        chroot_script = f"""
-#!/usr/bin/env bash
+        
+        # Create the chroot script with proper variable substitution
+        chroot_script = f"""#!/bin/bash
 
 set -e
 
+echo "============================================================"
+echo "Arch Linux System Configuration Script"
+echo "============================================================"
+
+# Step 1: Set timezone
+echo ""
+echo "[1/8] Setting timezone..."
 ln -sf /usr/share/zoneinfo/{timezone} /etc/localtime
+
+# Step 2: Set hardware clock
+echo ""
+echo "[2/8] Setting hardware clock..."
 hwclock --systohc
+
+# Step 3: Configure locale
+echo ""
+echo "[3/8] Configuring locale..."
 sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
-echo "LANG=en_US.UTF-8" >> /etc/locale.conf
-echo "{host_name}" >> /etc/hostname
-echo root:{root_pass} | chpasswd
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-cat <<EOF > /etc/hosts
+# Step 4: Set hostname
+echo ""
+echo "[4/8] Setting hostname..."
+echo "{host_name}" > /etc/hostname
+
+# Step 5: Configure hosts file
+echo ""
+echo "[5/8] Configuring hosts file..."
+cat > /etc/hosts << EOF
 127.0.0.1 localhost
 ::1       localhost
 127.0.1.1	{host_name}.localdomain	{host_name}
 EOF
 
-pacman -S mtools libva-mesa-driver vulkan-nouveau cmake docker xf86-video-nouveau xorg-server xorg-xinit yt-dlp python3 fastfetch whois zsh mesa-utils git dosfstools man less xclip linux-headers reflector hyprland sddm kitty kate 7zip firefox btop vlc smplayer unrar pipewire pipewire-alsa dolphin pipewire-pulse --noconfirm --needed
-systemctl enable sddm
-systemctl enable NetworkManager
-systemctl enable snapper-timeline.timer
-systemctl enable snapper-cleanup.timer
-systemctl enable grub-btrfsd.service
+# Step 6: Set root password
+echo ""
+echo "[6/8] Setting root password..."
+echo "root:{root_pass}" | chpasswd
 
+# Step 7: Install additional packages
+echo ""
+echo "[7/8] Installing additional packages..."
+pacman -S --noconfirm --needed mtools libva-mesa-driver vulkan-nouveau cmake docker \\
+    xf86-video-nouveau xorg-server xorg-xinit yt-dlp python3 fastfetch whois zsh \\
+    mesa-utils git dosfstools man less xclip linux-headers reflector hyprland sddm \\
+    kitty kate 7zip firefox btop vlc smplayer unrar pipewire pipewire-alsa \\
+    dolphin pipewire-pulse
+
+# Step 8: Enable services and configure system
+echo ""
+echo "[8/8] Enabling services and final configuration..."
+
+# Enable system services
+systemctl enable sddm NetworkManager snapper-timeline.timer snapper-cleanup.timer grub-btrfsd.service
+
+# Create user
+echo ""
+echo "Creating user account..."
 useradd -m -G wheel,storage,power,audio,video {username}
-sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
-echo {username}:{user_pass} | chpasswd
 
+# Configure sudo access
+sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+
+# Set user password
+echo "{username}:{user_pass}" | chpasswd
+
+# Install GRUB
+echo ""
+echo "Installing GRUB bootloader..."
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+
+# Generate GRUB configuration
 grub-mkconfig -o /boot/grub/grub.cfg
-""".lstrip()
+
+echo ""
+echo "============================================================"
+echo "✓ System configuration completed successfully!"
+echo "============================================================"
+"""
         
         write_file(Path("/mnt/chroot.sh"), chroot_script, mode=0o755)
         
@@ -674,7 +727,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
         attempt = 0
         while attempt < 3:
             try:
-                run_command(["arch-chroot", "/mnt", "sh", "/chroot.sh"])
+                run_command(["arch-chroot", "/mnt", "bash", "/chroot.sh"])
                 break
             except InstallError as e:
                 if attempt < 2 and retry_prompt(f"arch-chroot failed: {e}"):
