@@ -45,7 +45,7 @@ timedatectl set-ntp true
 ### Install dependencies on the ISO
 The Arch ISO usually includes most tools. Ensure Python and Reflector are available:
 ```bash
-pacman -Sy python reflector --noconfirm
+pacman -Sy python reflector --noconfirm --needed
 ```
 
 ### Running the installer
@@ -65,7 +65,6 @@ Create the partitions first using `fdisk`, `cgdisk`, or `parted` (GPT). When pro
 ### What the installer configures
 - Mirrors via `reflector`
 - Base packages via `pacstrap` (including `grub`, `efibootmgr`, `networkmanager`, `snapper`)
-- `genfstab` written into `/mnt/etc/fstab`
 - Timezone, locale, hostname, hosts
 - `sddm`, `NetworkManager`, `snapper` timers, and `grub-btrfsd` enabled
 - Creates a user and sets passwords for root and the user
