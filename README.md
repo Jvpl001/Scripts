@@ -28,7 +28,7 @@ cp /mnt/usb/arch_install_v1.py /root/
 
 - From the web (if you host the file):
 ```bash
-curl -o /root/arch_install_v1.py 'https://raw.githubusercontent.com/Jvpl001/Scripts/refs/heads/main/ArchInstall-v1.py'
+curl -o /root/arch_install_v1.py 'https://raw.githubusercontent.com/Jvpl001/Scripts/refs/heads/test/Arch-Install-v1.py'
 ```
 
 - Manual paste:
