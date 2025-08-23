@@ -1,44 +1,94 @@
-# Scripts
-## Arch Install Script
+# 🐧 Arch Linux Installer V2
 
-A script to automate parts of an Arch Linux setup
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
+[![Arch Linux](https://img.shields.io/badge/Arch%20Linux-rolling-blue.svg)](https://archlinux.org/)
 
-> Warning: These scripts will format and modify disks. Double-check targets with `lsblk` and proceed only if you understand the implications.
+> **Automated Arch Linux installation script with btrfs filesystem, Hyprland desktop**
 
+## ✨ Features
 
-### Partitioning assumptions (important)
-The installer script expects you to have already created three partitions on your target disk:
-- 1: EFI System Partition (FAT32)
-- 2: swap
-- 3: Linux data (Btrfs)
+- 🚀 **Automated Installation** - Minimal user interaction required
+- 💾 **Btrfs Filesystem** - Advanced filesystem with snapshots and compression
+- 🖥️ **Hyprland Desktop** - Modern, tiling Wayland compositor
+- 🔒 **UEFI Boot Support** - Secure boot with GPT partitioning
+- 📦 **Pre-configured Software** - Essential tools and applications included
+- 🎯 **Smart Partitioning** - Optimized partition layout (EFI + Swap + Root)
+- 🌍 **Mirror Optimization** - Automatic mirror selection for faster downloads
+- 🛡️ **Security Features** - Proper user setup with sudo privileges
+- 📸 **Snapshot Support** - Btrfs snapshots with Snapper integration
 
-### Requirements
-- Run from the official Arch Linux live ISO (UEFI mode recommended).
-- Internet connection (Ethernet or Wi‑Fi).
-- Root privileges (you are root by default on the live ISO).
+## 🎯 What It Does
 
-### Get the scripts onto the live system
-Use one of the following methods after booting the Arch ISO:
+This script performs a complete Arch Linux installation including:
 
-- From USB (example):
+1. **System Validation** - Checks UEFI boot mode and root privileges
+2. **Disk Partitioning** - Creates GPT table with EFI, swap, and root partitions
+3. **Filesystem Setup** - Configures btrfs with optimized subvolumes
+4. **Base Installation** - Installs core system packages
+5. **Desktop Environment** - Sets up Hyprland with SDDM display manager
+6. **User Configuration** - Creates user account with proper permissions
+7. **Bootloader Setup** - Installs and configures GRUB for UEFI
+8. **System Services** - Enables essential systemd services
+9. **Software Suite** - Installs productivity and entertainment applications
+
+## 📋 Requirements
+
+### System Requirements
+- **Arch Linux Live ISO** (latest version recommended)
+- **UEFI Boot Mode** (BIOS/Legacy mode not supported)
+- **Internet Connection** (for package downloads)
+- **Target Disk** (all data will be erased)
+
+### Hardware Requirements
+- **Architecture**: x86_64 (64-bit)
+- **RAM**: Minimum 2GB, recommended 4GB+
+- **Storage**: Minimum 20GB, recommended 50GB+
+- **Graphics**: Only Nouveau(Mesa) drivers included
+
+### Software Dependencies
+The script automatically checks for these commands:
+- `reflector`, `pacman`, `pacman-key`
+- `lsblk`, `fdisk`, `mkfs.fat`, `mkswap`
+- `mkfs.btrfs`, `mount`, `btrfs`, `umount`
+- `pacstrap`, `genfstab`, `arch-chroot`
+- `grub-install`, `grub-mkconfig`
+
+## 🚀 Quick Start
+
+### 1. Download and Boot
 ```bash
-mkdir /mnt/usb && mount /dev/sdX1 /mnt/usb
-cp /mnt/usb/arch_install_v1.py /root/
+# Download the latest Arch Linux ISO
+# Boot from USB/DVD in UEFI mode
 ```
 
-- From the web (if you host the file):
+### 2. Run the Installer
+- From another USB (example):
 ```bash
-curl -o /root/arch_install_v1.py 'https://raw.githubusercontent.com/Jvpl001/Scripts/refs/heads/test/Arch-Install-v1.py'
+mkdir /mnt/usb && mount /dev/sdX1 /mnt/usb
+cp /mnt/usb/Arch-Install-V2.py /root/
+```
+
+- From the web:
+```bash
+curl -o /root/Arch-Install-V2.py 'https://raw.githubusercontent.com/Jvpl001/Scripts/refs/heads/main/Arch-Install-V2.py'
 ```
 
 - Manual paste:
 ```bash
-nano /root/arch_install_v1.py
+nano /root/Arch-Install-V2.py
 # paste file content, then save and exit
 ```
 
-- Enable NTP:
+### Prerequisites
 ```bash
+# Ensure you're booted in UEFI mode
+[ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
+
+# Verify internet connection
+ping archlinux.org
+
+# Update system clock
 timedatectl set-ntp true
 ```
 
@@ -51,29 +101,127 @@ pacman -Sy python reflector --noconfirm --needed
 ### Running the installer
 Make the script executable and run it:
 ```bash
-chmod +x /root/arch_install_v1.py
-python3 /root/arch_install_v1.py
+chmod +x /root/Arch-Install-V2.py
+python3 /root/Arch-Install-V2.py
 ```
 
-The script will:
-- Format partition 1 as FAT32 for EFI, partition 2 as swap, partition 3 as Btrfs.
-- Create Btrfs subvolumes: `@`, `@home`, `@var`, `@snapshots`.
-- Mount them with sensible options and proceed with base installation and configuration.
+### 3. Follow the Prompts
+The script will guide you through:
+- Disk selection
+- Username and password setup
+- Hostname configuration
+- Country and timezone selection
 
-Create the partitions first using `fdisk`, `cgdisk`, or `parted` (GPT). When prompted for `sdX` during the script, enter the disk base (e.g., `sda` or `nvme0n1`). The script uses `X1`, `X2`, and `X3` automatically for the EFI, swap, and Btrfs partitions.
+## 📖 Detailed Usage
 
-### What the installer configures
-- Mirrors via `reflector`
-- Base packages via `pacstrap` (including `grub`, `efibootmgr`, `networkmanager`, `snapper`)
-- Timezone, locale, hostname, hosts
-- `sddm`, `NetworkManager`, `snapper` timers, and `grub-btrfsd` enabled
-- Creates a user and sets passwords for root and the user
-- Installs and configures GRUB for UEFI
+### Installation Process
+1. **Disk Selection**: Choose your target disk (e.g., `sda`, `nvme0n1`)
+2. **Confirmation**: Review partition layout before proceeding
+3. **User Setup**: Enter username, passwords, and hostname
+4. **Localization**: Specify country and timezone
+5. **Automated Installation**: Script handles everything else
 
-### Troubleshooting
-- If a command is missing, the scripts will exit with a helpful message. Install the missing tool with `pacman -Sy <package> --noconfirm`.
-- Ensure you are booted in UEFI mode (required for `grub-install --target=x86_64-efi`).
-- Verify the correct target disk with `lsblk` before proceeding.
+### What Gets Installed
 
-### License
-See `LICENSE` for details.
+#### Core System
+- Base system packages
+- Linux kernel and firmware
+- Development tools
+- Network management
+
+#### Desktop Environment
+- **Hyprland** - Modern tiling Wayland compositor
+- **SDDM** - Display manager
+- **Kitty** - Terminal emulator
+- **Dolphin** - File manager
+
+#### Applications
+- **Firefox** - Web browser
+- **VLC** - Media player
+- **Kate** - Text editor
+- **Btop** - System monitor
+- **7-Zip** - Archive manager
+
+#### Development Tools
+- **Git** - Version control
+- **Docker** - Containerization
+- **CMake** - Build system
+- **Python3** - Programming language
+
+## 🔧 Customization
+
+### Modify Package Selection
+Edit the `chroot_script` section in the script to add/remove packages:
+
+```python
+pacman -S your-package-here --noconfirm --needed
+```
+
+### Change Filesystem Options
+Modify btrfs mount options for different performance characteristics:
+
+```python
+# Current: noatime,compress=lzo,space_cache=v2
+# Alternative: noatime,compress=zstd,space_cache=v2
+```
+
+### Adjust Partition Sizes
+Modify the `FDISK_TEMPLATE` for different partition layouts:
+
+```python
+# EFI: +256M (current)
+# Swap: +4G (current)
+# Root: rest of disk (current)
+```
+
+## 🚨 Important Notes
+
+### ⚠️ Data Loss Warning
+**This script will completely erase the target disk. Ensure you have backups of any important data.**
+
+### 🔒 Security Considerations
+- Script must run as root
+- Passwords are handled securely
+- User is added to wheel group with sudo access
+- Proper file permissions are set
+
+### 🐛 Troubleshooting
+
+#### Common Issues
+1. **UEFI Mode Required**: Ensure your system boots in UEFI mode
+2. **Network Issues**: Check internet connection and mirror availability
+3. **Disk Space**: Ensure sufficient space on target disk
+4. **Permission Errors**: Script must run with sudo/root privileges
+
+## 📚 Learning Resources
+
+- [Arch Linux Wiki](https://wiki.archlinux.org/)
+- [Hyprland Documentation](https://wiki.hyprland.org/)
+- [Btrfs Filesystem](https://btrfs.wiki.kernel.org/)
+- [UEFI Boot](https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+
+### Development Setup
+```bash
+# Clone the repository
+git clone https://github.com/Jvpl001/Scripts.git
+cd Scripts
+```
+
+## 📄 License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Arch Linux Team](https://archlinux.org/) for the amazing distribution
+- [Hyprland Community](https://github.com/hyprwm/Hyprland) for the desktop environment
+- [Btrfs Team](https://btrfs.wiki.kernel.org/) for the filesystem
+- All contributors and users of this project
+
+**⭐ If this project helped you, please give it a star!**
+
+*Made with ❤️ for the Arch Linux community*
