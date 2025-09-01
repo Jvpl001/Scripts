@@ -10,36 +10,28 @@ from typing import List
 from pathlib import Path
 
 FDISK_TEMPLATE = """
-# Create new GPT
 g
-# Partition 1: EFI System (256MB)
 n
 1
 
 +256M
-# Partition 2: swap (4G)
 n
 2
 
 +4G
-# Partition 3: root (rest of disk)
 n
 3
 
 
-# Type for p1 -> EFI (1)
 t
 1
 1
-# Type for p2 -> Linux swap (19)
 t
 2
 19
-# Type for p3 -> Linux filesystem (20)
 t
 3
 20
-# Print and write
 p
 w
 """.lstrip()
@@ -153,7 +145,7 @@ def main() -> None:
         ensure_command_exists(dependency)
 
     print("╔══════════════════════════════════════════════════════════════╗")
-    print("║                    Arch Linux Installer V3                   ║")
+    print("║                    Arch Linux Installer V2                   ║")
     print("║                  btrfs + hyprland Edition                    ║")
     print("╚══════════════════════════════════════════════════════════════╝")
 
@@ -220,7 +212,7 @@ def main() -> None:
     # Try to update mirrorlist with reflector, but don't quit if it fails
     try:
         subprocess.run(["reflector", "-c", country, "--sort", "rate", "--save", "/etc/pacman.d/mirrorlist"], check=True)
-        print("✓ Mirrorlist updated successfully")
+        print("Mirrorlist updated successfully")
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         print(f" Warning: Failed to update mirrorlist with reflector: {e}")
         print("This could affect download speeds, but the installation can continue.")
