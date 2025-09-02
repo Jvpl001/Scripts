@@ -247,7 +247,7 @@ def main() -> None:
     run_command(["pacstrap", "/mnt", "base", "linux", "linux-firmware", "nano", "neovim", "sof-firmware", "base-devel", "grub", "grub-btrfs", "efibootmgr", "networkmanager", "snapper"])
     
     # Generate fstab
-    run_command(["genfstab", "-U", "/mnt", "-f", "/mnt/etc/fstab"])
+    run_command(["genfstab", "-U", "/mnt", ">>", "/mnt/etc/fstab"])
 
     # Create chroot script content
     chroot_script = f"""
