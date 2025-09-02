@@ -4,11 +4,11 @@
 [![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-rolling-blue.svg)](https://archlinux.org/)
 
-> **Automated Arch Linux installation script with btrfs filesystem, Hyprland desktop**
+Automated Arch Linux installation script with Btrfs filesystem and Hyprland desktop. Supports interactive and fully unattended installs.
 
 ## ✨ Features
 
-- 🚀 **Automated Installation** - Minimal user interaction required
+- 🚀 **Automated Installation** - Interactive and unattended modes
 - 💾 **Btrfs Filesystem** - Advanced filesystem with snapshots and compression
 - 🖥️ **Hyprland Desktop** - Modern, tiling Wayland compositor
 - 🔒 **UEFI Boot Support** - Secure boot with GPT partitioning
@@ -18,13 +18,22 @@
 - 🛡️ **Security Features** - Proper user setup with sudo privileges
 - 📸 **Snapshot Support** - Btrfs snapshots with Snapper integration
 
+## 🆕 What’s New
+
+- __Silent mode (`--silent`)__ with sensible defaults and optional overrides
+- __CLI flags__ for disk, username, passwords, hostname, country, timezone
+- __NVMe-aware partitions__ (handles `nvme0n1p1` naming automatically)
+- __Secure password handling__ (set via stdin, not written to disk)
+- __Correct fstab generation__ (writes output of `genfstab -U /mnt` to `/mnt/etc/fstab`)
+- __Cleanup on failure__ (`umount -R /mnt` and `swapoff`) to avoid dirty state
+
 ## 🎯 What It Does
 
 This script performs a complete Arch Linux installation including:
 
 1. **System Validation** - Checks UEFI boot mode and root privileges
 2. **Disk Partitioning** - Creates GPT table with EFI, swap, and root partitions
-3. **Filesystem Setup** - Configures btrfs with optimized subvolumes
+3. **Filesystem Setup** - Configures Btrfs with subvolumes (@, @home, @var, @snapshots)
 4. **Base Installation** - Installs core system packages
 5. **Desktop Environment** - Sets up Hyprland with SDDM display manager
 6. **User Configuration** - Creates user account with proper permissions
@@ -47,7 +56,7 @@ This script performs a complete Arch Linux installation including:
 - **Graphics**: Only Nouveau(Mesa) drivers included
 
 ### Software Dependencies
-The script automatically checks for these commands:
+The script checks for these commands and exits early if missing:
 - `reflector`, `pacman`, `pacman-key`
 - `lsblk`, `fdisk`, `mkfs.fat`, `mkswap`
 - `mkfs.btrfs`, `mount`, `btrfs`, `umount`
@@ -62,7 +71,8 @@ The script automatically checks for these commands:
 # Boot from USB/DVD in UEFI mode
 ```
 
-### 2. Run the Installer
+### 2. Get the Installer
+
 - From another USB (example):
 ```bash
 mkdir /mnt/usb && mount /dev/sdX1 /mnt/usb
@@ -98,7 +108,7 @@ The Arch ISO usually includes most tools. Ensure Python and Reflector are availa
 pacman -Sy python reflector --noconfirm --needed
 ```
 
-### Running the installer
+### Running the installer (interactive)
 Make the script executable and run it:
 ```bash
 chmod +x /root/Arch-Install-V2.py
@@ -114,7 +124,44 @@ The script will guide you through:
 
 ## 📖 Detailed Usage
 
+### Command-line options
+
+```
+--silent                 Run unattended with defaults (no prompts)
+--disk DISK              Target disk base (e.g., sda, nvme0n1)
+--username NAME          Username to create (default: archuser)
+--user-pass PASS         User password (omit in --silent to autogenerate)
+--root-pass PASS         Root password (omit in --silent to autogenerate)
+--hostname NAME          Hostname (default: archlinux)
+--country NAME           Country for reflector (default: United States)
+--timezone ZONE          Timezone like Region/City (default: UTC)
+```
+
+### Unattended examples
+
+```bash
+# Fully unattended with defaults (prompts suppressed)
+python3 /root/Arch-Install-V2.py --silent --disk nvme0n1
+
+# Unattended with custom values
+python3 /root/Arch-Install-V2.py \
+  --silent \
+  --disk sda \
+  --username alice \
+  --hostname myarch \
+  --country Iran \
+  --timezone Asia/Tehran
+
+# Unattended with explicit passwords
+python3 /root/Arch-Install-V2.py --silent --disk sda --user-pass 'P@ssw0rd!' --root-pass 'R00t!Pass'
+```
+
+Notes:
+- In `--silent` mode, if passwords are not provided, strong random ones are generated internally.
+- The script does not print generated passwords by default.
+
 ### Installation Process
+
 1. **Disk Selection**: Choose your target disk (e.g., `sda`, `nvme0n1`)
 2. **Confirmation**: Review partition layout before proceeding
 3. **User Setup**: Enter username, passwords, and hostname
@@ -130,35 +177,42 @@ The script will guide you through:
 - Network management
 
 #### Desktop Environment
+
 - **Hyprland** - Modern tiling Wayland compositor
 - **SDDM** - Display manager
 - **Kitty** - Terminal emulator
 - **Dolphin** - File manager
 
 #### Applications
+
 - **Firefox** - Web browser
 - **VLC** - Media player
 - **Kate** - Text editor
 - **Btop** - System monitor
-- **7-Zip** - Archive manager
+- **7-Zip** - Archive manager (package: 7zip)
 
 #### Development Tools
+
 - **Git** - Version control
 - **Docker** - Containerization
 - **CMake** - Build system
 - **Python3** - Programming language
 
+#### Graphics
+- **Mesa** - Open-source graphics stack
+- **Nouveau** - Open-source NVIDIA driver (xf86-video-nouveau + vulkan-nouveau)
+
 ## 🔧 Customization
 
 ### Modify Package Selection
-Edit the `chroot_script` section in the script to add/remove packages:
+Edit the `chroot_script` in `Arch-Install-V2.py` to add/remove packages:
 
 ```python
 pacman -S your-package-here --noconfirm --needed
 ```
 
 ### Change Filesystem Options
-Modify btrfs mount options for different performance characteristics:
+Modify Btrfs mount options for different performance characteristics:
 
 ```python
 # Current: noatime,compress=lzo,space_cache=v2
@@ -166,7 +220,7 @@ Modify btrfs mount options for different performance characteristics:
 ```
 
 ### Adjust Partition Sizes
-Modify the `FDISK_TEMPLATE` for different partition layouts:
+Modify the `FDISK_TEMPLATE` in `Arch-Install-V2.py` for different partition layouts:
 
 ```python
 # EFI: +256M (current)
@@ -180,10 +234,10 @@ Modify the `FDISK_TEMPLATE` for different partition layouts:
 **This script will completely erase the target disk. Ensure you have backups of any important data.**
 
 ### 🔒 Security Considerations
-- Script must run as root
-- Passwords are handled securely
-- User is added to wheel group with sudo access
-- Proper file permissions are set
+- Must run as root and in UEFI mode
+- Passwords are set via stdin to `chpasswd` (not written to disk)
+- User is added to `wheel` with sudo access
+- Proper file permissions are set on generated files
 
 ### 🐛 Troubleshooting
 
