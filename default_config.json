@@ -1,0 +1,9 @@
+{
+  "country": "Iran",
+  "username": "user",
+  "host_name": "arch-host",
+  "user_pass": "CHANGE_ME",
+  "root_pass": "CHANGE_ME",
+  "timezone": "Asia/Tehran",
+  "gpu": "0"
+}
