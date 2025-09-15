@@ -14,39 +14,46 @@
 
 ## Quick Start
 
-Interactive mode:
-
+### 1. Download and Boot
 ```bash
-python3 main.py
+# Download the latest Arch Linux ISO
+# Boot from USB/DVD in UEFI mode
 ```
 
-Config-driven (prompts only for missing/invalid values):
-
+### 2. Run the Installer
+- From another USB (example):
 ```bash
-python3 main.py --config default_config.json
+mkdir /mnt/usb && mount /dev/sdX1 /mnt/usb
+cp -r /mnt/usb/scripts /root/
 ```
 
-Fully non-interactive (use config and auto-confirm confirmations like partitioning and reboot):
-
+- From the web:
 ```bash
-python3 main.py --config default_config.json --yes
+git clone https://github.com/Jvpl001/Scripts.git
 ```
 
-## Configuration File
+### Prerequisites
+```bash
+# Verify internet connection
+ping archlinux.org
 
-`default_config.json` example:
-
-```json
-{
-  "country": "Iran",
-  "username": "user",
-  "host_name": "arch-host",
-  "user_pass": "CHANGE_ME",
-  "root_pass": "CHANGE_ME",
-  "timezone": "Asia/Tehran",
-  "gpu": "0"
-}
+# Update system clock
+timedatectl set-ntp true
 ```
+
+### Install dependencies on the ISO
+The Arch ISO usually includes most tools. Ensure Python and Reflector are available:
+```bash
+pacman -Sy python git --noconfirm --needed
+```
+
+### Running the installer
+Make the script executable and run it:
+```bash
+chmod +x /root/scripts/main.py
+python3 /root/scripts/main.py
+```
+
 
 - `gpu` options:
   - `0` → Mesa (open-source)
