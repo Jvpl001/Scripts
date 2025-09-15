@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import subprocess
 import sys
+import crypt
 from pathlib import Path
 
 from .liberary import confirm
@@ -101,8 +102,10 @@ grub-mkconfig -o /boot/grub/grub.cfg
     # Run the chroot configuration script first (no passwords inside it)
     run_command(["arch-chroot", "/mnt", "bash", "/chroot.sh"])
     
-    # Now set passwords securely by piping to chpasswd via stdin.
-    # This avoids writing plaintext passwords into any file on disk.
-    run_command(["arch-chroot", "/mnt", "chpasswd"], input_text=f"root:{root_pass}\n")
-    run_command(["arch-chroot", "/mnt", "chpasswd"], input_text=f"{username}:{user_pass}\n")
+    # Now set passwords securely using hashed values with chpasswd -e.
+    # Using crypt with SHA-512 ensures no plaintext password crosses stdin.
+    root_hash = crypt.crypt(root_pass, crypt.mksalt(crypt.METHOD_SHA512))
+    user_hash = crypt.crypt(user_pass, crypt.mksalt(crypt.METHOD_SHA512))
+    run_command(["arch-chroot", "/mnt", "chpasswd", "-e"], input_text=f"root:{root_hash}\n")
+    run_command(["arch-chroot", "/mnt", "chpasswd", "-e"], input_text=f"{username}:{user_hash}\n")
     run_command(["rm", "-f", "/mnt/chroot.sh"])
