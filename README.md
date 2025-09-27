@@ -220,5 +220,3 @@ main
 - Target disk is correct and not holding data you need.
 - Network is up, or you’ve accepted reflector fallback.
 - You understand this will format and install Arch on the selected disk.
-
-If you want any of the improvements implemented, or if you want a BIOS/Legacy variant, let me know and I’ll extend the code accordingly.
